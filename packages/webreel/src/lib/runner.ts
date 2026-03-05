@@ -460,7 +460,7 @@ export async function runVideo(
       }
     }
     try {
-      chrome.kill();
+      await chrome.kill();
     } catch (err) {
       console.warn("Failed to kill Chrome process:", err);
     }

@@ -661,7 +661,7 @@ export async function typeText(
       windowsVirtualKeyCode: keyCode,
     });
     ctx.markEvent("key");
-    if (ctx.isRecording) {
+    if (ctx.isRecording && delayMs > 0) {
       const waitStart = Date.now();
       await getTimeline(ctx).waitForNextTick();
       const tickElapsed = Date.now() - waitStart;

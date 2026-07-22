@@ -281,6 +281,24 @@ export function validateStep(step: unknown, index: number): ValidationError[] {
         });
       }
       break;
+
+    case "blockUrls":
+      if (!Array.isArray(s.patterns) || s.patterns.some((p) => typeof p !== "string")) {
+        errors.push({
+          path: `${prefix}.patterns`,
+          message: "Must be an array of URL pattern strings (may be empty)",
+        });
+      }
+      break;
+
+    case "evaluate":
+      if (typeof s.expression !== "string" || s.expression.length === 0) {
+        errors.push({
+          path: `${prefix}.expression`,
+          message: "Must be a non-empty string",
+        });
+      }
+      break;
   }
 
   if (s.delay !== undefined && (!Number.isFinite(s.delay) || (s.delay as number) < 0)) {

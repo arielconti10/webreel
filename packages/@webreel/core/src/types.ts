@@ -1,3 +1,17 @@
+export interface CookieParam {
+  name: string;
+  value: string;
+  /** URL to associate the cookie with; alternative to domain/path. */
+  url?: string;
+  domain?: string;
+  path?: string;
+  secure?: boolean;
+  httpOnly?: boolean;
+  sameSite?: "Strict" | "Lax" | "None";
+  /** Unix timestamp in seconds; omit for a session cookie. */
+  expires?: number;
+}
+
 export type CDPClient = {
   close: () => Promise<void>;
   on: (event: string, cb: (...args: unknown[]) => void) => void;
@@ -56,6 +70,11 @@ export type CDPClient = {
       selector: string;
     }) => Promise<{ nodeId: number }>;
     setFileInputFiles: (params: { nodeId: number; files: string[] }) => Promise<void>;
+  };
+  Network: {
+    enable: () => Promise<void>;
+    setCookies: (params: { cookies: CookieParam[] }) => Promise<void>;
+    setBlockedURLs: (params: { urls: string[] }) => Promise<void>;
   };
 };
 

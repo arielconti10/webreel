@@ -544,6 +544,34 @@ export const STEP_DEFS: Record<string, StepDef> = {
       ...COMMON_STEP_FIELDS,
     },
   },
+  blockUrls: {
+    defName: "stepBlockUrls",
+    required: ["action", "patterns"],
+    properties: {
+      action: { type: "string", const: "blockUrls" },
+      patterns: {
+        type: "array",
+        items: { type: "string" },
+        description:
+          "URL patterns for Chrome's Network.setBlockedURLs ('*' wildcards). An empty array clears blocking. Blocking persists across navigations within the video until changed.",
+      },
+      ...COMMON_STEP_FIELDS,
+    },
+  },
+  evaluate: {
+    defName: "stepEvaluate",
+    required: ["action", "expression"],
+    properties: {
+      action: { type: "string", const: "evaluate" },
+      expression: {
+        type: "string",
+        minLength: 1,
+        description:
+          "JavaScript expression evaluated in the page context. Promises are awaited before the next step runs.",
+      },
+      ...COMMON_STEP_FIELDS,
+    },
+  },
 };
 
 export const VIDEO_FIELDS: Record<string, FieldSchema> = {
@@ -551,6 +579,33 @@ export const VIDEO_FIELDS: Record<string, FieldSchema> = {
     type: "string",
     minLength: 1,
     description: "URL to navigate to. Can be relative when baseUrl is set.",
+  },
+  cookies: {
+    type: "array",
+    items: {
+      type: "object",
+      required: ["name", "value"],
+      additionalProperties: false,
+      properties: {
+        name: { type: "string", minLength: 1 },
+        value: { type: "string" },
+        url: {
+          type: "string",
+          description: "URL to associate the cookie with; alternative to domain/path.",
+        },
+        domain: { type: "string" },
+        path: { type: "string" },
+        secure: { type: "boolean" },
+        httpOnly: { type: "boolean" },
+        sameSite: { type: "string", enum: ["Strict", "Lax", "None"] },
+        expires: {
+          type: "number",
+          description: "Unix timestamp in seconds; omit for a session cookie.",
+        },
+      },
+    },
+    description:
+      "Cookies installed via CDP before the initial navigation (e.g. an authenticated session).",
   },
   baseUrl: {
     type: "string",

@@ -139,6 +139,28 @@ export interface StepUpload {
   description?: string;
 }
 
+export interface StepBlockUrls {
+  action: "blockUrls";
+  /**
+   * URL patterns passed to Chrome's Network.setBlockedURLs ('*' wildcards).
+   * An empty array clears all blocking. Blocking persists across navigations
+   * within the video until changed.
+   */
+  patterns: string[];
+  label?: string;
+  delay?: number;
+  description?: string;
+}
+
+export interface StepEvaluate {
+  action: "evaluate";
+  /** JavaScript expression evaluated in the page. Promises are awaited. */
+  expression: string;
+  label?: string;
+  delay?: number;
+  description?: string;
+}
+
 export type Step =
   | StepPause
   | StepClick
@@ -153,7 +175,9 @@ export type Step =
   | StepNavigateHref
   | StepHover
   | StepSelect
-  | StepUpload;
+  | StepUpload
+  | StepBlockUrls
+  | StepEvaluate;
 
 export interface CursorConfig {
   image?: string;
@@ -189,13 +213,15 @@ export const VIEWPORT_PRESETS: Record<string, { width: number; height: number }>
   "galaxy-s24": { width: 360, height: 780 },
 };
 
-export type { SfxConfig, AutoZoomConfig } from "@webreel/core";
-import type { SfxConfig, AutoZoomConfig } from "@webreel/core";
+export type { SfxConfig, AutoZoomConfig, CookieParam } from "@webreel/core";
+import type { SfxConfig, AutoZoomConfig, CookieParam } from "@webreel/core";
 
 export interface VideoConfig {
   name: string;
   url: string;
   baseUrl?: string;
+  /** Cookies installed via CDP before the initial navigation. */
+  cookies?: CookieParam[];
   viewport?: { width: number; height: number };
   zoom?: number;
   fps?: number;

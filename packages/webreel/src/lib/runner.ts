@@ -68,6 +68,10 @@ export function formatStep(i: number, step: Step): string {
       return `[step ${i}] select "${step.selector}" value="${step.value}"${desc}`;
     case "upload":
       return `[step ${i}] upload selector="${step.selector}" file="${step.filePath}"${desc}`;
+    case "blockUrls":
+      return `[step ${i}] blockUrls [${step.patterns.join(", ")}]${desc}`;
+    case "evaluate":
+      return `[step ${i}] evaluate${desc}`;
     default: {
       const _exhaustive: never = step;
       return `[step ${i}] ${(_exhaustive as Step).action}`;
@@ -145,6 +149,8 @@ async function captureZoomEvent(
     case "screenshot":
     case "scroll":
     case "upload":
+    case "blockUrls":
+    case "evaluate":
       return null;
 
     case "click":
@@ -309,6 +315,11 @@ export async function runVideo(
 
     const baseUrl = config.baseUrl ?? "";
     const url = resolveUrl(config.url, baseUrl, configDir);
+
+    if (config.cookies && config.cookies.length > 0) {
+      await client.Network.enable();
+      await client.Network.setCookies({ cookies: config.cookies });
+    }
 
     await navigate(client, url);
 
@@ -515,6 +526,21 @@ export async function runVideo(
           case "navigate": {
             const navUrl = resolveUrl(step.url, config.baseUrl ?? "", configDir);
             await navigate(client, navUrl);
+            break;
+          }
+
+          case "blockUrls": {
+            await client.Network.enable();
+            await client.Network.setBlockedURLs({ urls: step.patterns });
+            break;
+          }
+
+          case "evaluate": {
+            await client.Runtime.evaluate({
+              expression: step.expression,
+              awaitPromise: true,
+              returnByValue: true,
+            });
             break;
           }
 
